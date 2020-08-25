@@ -2,6 +2,20 @@
 import argparse
 import feedparser
 import datetime
+import json
+
+
+def write_log(path, item):
+    try:
+        content = json.dumps(item)
+        # Append new items to the file
+        with open(path, "a") as log_file:
+            log_file.write(content)
+            log_file.write("\n\n")
+
+    except Exception as e:
+        print("Make sure to use absolute path AND the file can be overwritten")
+
 
 def get_items(urls):
     result = {}
@@ -28,11 +42,11 @@ def get_items(urls):
 
 
 def main():
-    description = "Read the feed from urls"
-
     # Parse the arguments from users
+    description = "Read the feed from urls"
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('-u','--urls', nargs='+', required=True)
+    parser.add_argument('-p','--path', required=True)
     args = vars(parser.parse_args())
 
     # List of urls
@@ -40,7 +54,7 @@ def main():
 
     items = get_items(urls)
     print(items)
-
+    write_log(args['path'], items)
 
 if __name__ == "__main__":
     main()
