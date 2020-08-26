@@ -3,11 +3,47 @@ import argparse
 import feedparser
 import datetime
 import json
+import os
+
+import mysql.connector
+from mysql.connector import Error
+from mysql.connector import errorcode
+from dotenv import load_dotenv
 
 
-def write_log(path, item):
+def add_to_database(items):
     try:
-        content = json.dumps(item)
+        connection = mysql.connector.connect(host=os.getenv("HOST"),
+                                             database=os.getenv("DATABASE"),
+                                             user='root',
+                                             password=os.getenv("PASSWORD"),
+                                             port=os.getenv("PORT"))
+        cursor = connection.cursor()
+
+        query = ""
+
+        cursor.execute(query)
+
+        connection.commit()
+        print(cursor.rowcount, "Record inserted successfully into Laptop table")
+        cursor.close()
+
+    except mysql.connector.Error as error:
+        print("Failed to insert record into Laptop table {}".format(error))
+
+    finally:
+        if (connection.is_connected()):
+            connection.close()
+
+
+def write_log(path, items):
+    # Remove the key 'published_parsed' which doesn't follow the JSON format
+    for url in items['feeds']:
+        for item in items['feeds'][url]:
+            item.pop("published_parsed", None)
+
+    try:
+        content = json.dumps(items)
         # Append new items to the file
         with open(path, "a") as log_file:
             log_file.write(content)
@@ -31,10 +67,6 @@ def get_items(urls):
         feed = feedparser.parse(url)
         items = feed["items"]
 
-        # Remove the key 'published_parsed' which doesn't follow the JSON format
-        for item in items:
-            item.pop("published_parsed", None)
-
         # Store the result
         result["feeds"] = {url : items}
 
@@ -42,6 +74,8 @@ def get_items(urls):
 
 
 def main():
+    # Load environment vars from the .env file
+    load_dotenv()
     # Parse the arguments from users
     description = "Read the feed from urls"
     parser = argparse.ArgumentParser(description=description)
@@ -53,8 +87,10 @@ def main():
     urls = ''.join(args['urls']).split(',')
 
     items = get_items(urls)
-    print(items)
+    add_to_database(items)
+
     write_log(args['path'], items)
+
 
 if __name__ == "__main__":
     main()
