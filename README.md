@@ -17,14 +17,14 @@
 
 #### Step 1: Create and activate a virtual env
     For this project, I used virtualenv, however you can choose whichever you like. Make sure to activate it after configuring.
-#### Step 2: Install all required library, using this command:
+#### Step 2: Install all required libraries, using this command:
     pip3 install -r requirement.txt
 
-## Grab items with function grab_items.py:
+## Grab items from feeds with function grab_items.py:
     Command: python3 grab_items.py -u <urls> -p <absolute_path_to_log_file>
 
     -u, --urls: list of urls, separated with commas
     -p, --path: absolute path to log file
 
-    This command will get the rss feed from urls and print out a list of items (JSON format). 
+    This command will get the rss feed from urls and print out a list of items (JSON format).
     It also add new record into the provided log file (create new if needed)
