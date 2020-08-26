@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 import feedparser
-import datetime
+from datetime import datetime
+from time import mktime
 import json
 import os
 
@@ -12,6 +13,7 @@ from dotenv import load_dotenv
 
 
 def add_to_database(items):
+
     try:
         connection = mysql.connector.connect(host=os.getenv("HOST"),
                                              database=os.getenv("DATABASE"),
@@ -19,21 +21,20 @@ def add_to_database(items):
                                              password=os.getenv("PASSWORD"),
                                              port=os.getenv("PORT"))
         cursor = connection.cursor()
-
-        query = ""
-
-        cursor.execute(query)
+        for url in items['feeds']:
+            for item in items['feeds'][url]:
+                published_parsed = datetime.fromtimestamp(mktime(item['published_parsed']))
+                published = published_parsed.strftime('%Y-%m-%d %H:%M:%S')
+                summary = item['summary'].replace("'", "\\'")
+                query = "INSERT INTO items(title, summary, link, published) VALUES('{}', N'{}', '{}', '{}')".format(item['title'], summary, item['link'], published)
+                cursor.execute(query)
 
         connection.commit()
-        print(cursor.rowcount, "Record inserted successfully into Laptop table")
         cursor.close()
+        connection.close()
 
     except mysql.connector.Error as error:
         print("Failed to insert record into Laptop table {}".format(error))
-
-    finally:
-        if (connection.is_connected()):
-            connection.close()
 
 
 def write_log(path, items):
@@ -56,7 +57,7 @@ def write_log(path, items):
 def get_items(urls):
     result = {}
     # Add the timestamp
-    result["date"] = str(datetime.datetime.utcnow())
+    result["date"] = str(datetime.utcnow())
     result["feeds"] = {}
 
     for url in urls:
@@ -69,7 +70,6 @@ def get_items(urls):
 
         # Store the result
         result["feeds"] = {url : items}
-
     return result
 
 
@@ -88,7 +88,6 @@ def main():
 
     items = get_items(urls)
     add_to_database(items)
-
     write_log(args['path'], items)
 
 
