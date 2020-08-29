@@ -1,0 +1,20 @@
+{% extends "feed_reader_app/index.html" %}
+
+{% block content %}
+  {% if item_list %}
+  <ul id="block_content">
+    {% for item in item_list %}
+      <li class="mb-4 mt-4 item shadow p-4">
+        <div class="d-flex justify-content-between mb-1">
+          <b>{{ item.title }}</b>
+          <i>{{ item.published }}</i>
+        </div>
+        <a href={{ item.link }}>{{ item.link }}</a>
+        <div class="summary mt-3">{{ item.summary|safe }}</div>
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>There are no Items to show.</p>
+  {% endif %}
+{% endblock %}
