@@ -7,7 +7,11 @@ body{
   background-color: rgb(244, 248, 251) !important;
 }
 
-#block_content{
+/* #item_number{
+  margin: 20px 15% 0px 15% !important;
+} */
+
+#block_content, #item_number{
   margin: 0px 15% !important;
 }
 

@@ -9,11 +9,19 @@
 
   </head>
   <body>
-    <div class="d-flex flex-column">
-      <img src="{% static 'feed_reader_app/header.png' %}" alt="Feed Reader Header">
-      <div class="d-flex flex-row">
-        show x column
-      </div>
+    <div class="d-flex flex-column mt-4">
+      <form id="item_number" method="GET" class="">
+        <div class="d-flex flex-row">
+          <select name="paginate_by" class="mr-1 p-0">
+            <option value="">Select ...</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+          </select>
+          <p class="m-0">items per page</p>
+        </div>
+        <input class="btn btn-info mt-2" type="submit" value="Apply">
+      </form>
       {% block content %}<!-- default content text (typically empty) -->{% endblock %}
     </div>
   </body>
