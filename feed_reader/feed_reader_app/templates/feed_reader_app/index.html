@@ -20,6 +20,7 @@
           </select>
           <p class="m-0">items per page</p>
         </div>
+        {{ filterset.form.as_p }}
         <input class="btn btn-info mt-2" type="submit" value="Apply">
       </form>
       {% block content %}<!-- default content text (typically empty) -->{% endblock %}

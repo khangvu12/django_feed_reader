@@ -19,25 +19,29 @@
       <p>There are no Items to show.</p>
     {% endif %}
 
+    {% load my_tags %}
+    {% if is_paginated %}
+
     <div class="pagination align-self-center mb-5">
       <span class="step-links">
-          {% if page_obj.has_previous %}
-              <a href="?page=1">&laquo; First</a>
-              <a href="?page={{ page_obj.previous_page_number }}"> Previous</a>
+        {% if page_obj.has_previous %}
+          <a href="?{% param_replace page=1 %}">First</a>
+          {% if page_obj.previous_page_number != 1 %}
+            <a href="?{% param_replace page=page_obj.previous_page_number %}">Previous</a>
           {% endif %}
+        {% endif %}
 
-          {% if page_obj.number %}
-          <span class="current">
-              Page {{ page_obj.number }}
-          </span>
+        Page {{ page_obj.number }} of {{ paginator.num_pages }}
+
+        {% if page_obj.has_next %}
+          {% if page_obj.next_page_number != paginator.num_pages %}
+            <a href="?{% param_replace page=page_obj.next_page_number %}">Next</a>
           {% endif %}
-
-
-          {% if page_obj.has_next %}
-              <a href="?page={{ page_obj.next_page_number }}">Next</a>
-              <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
-          {% endif %}
+          <a href="?{% param_replace page=paginator.num_pages %}">Last</a>
+        {% endif %}
       </span>
     </div>
+    {% endif %}
+
   </div>
 {% endblock %}
